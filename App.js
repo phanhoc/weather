@@ -7,13 +7,21 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, ImageBackground} from 'react-native';
+import {
+  Platform, 
+  StyleSheet, 
+  Text, 
+  View, 
+  ImageBackground, 
+  KeyboardAvoidingView,
+  ActivityIndicator
+} from 'react-native';
 
 import SearchInput from'./components/SearchInput'
 import getImageForWeather from './utils/getImageForWeather'
 import {fetchLocationId, fetchWeather} from './utils/api'
 
-export default class App extends Component<Props> {
+export default class App extends React.Component {
   constructor(props){
     super(props)
     this.state={
@@ -23,6 +31,10 @@ export default class App extends Component<Props> {
       temperature:0,
       weather:'',
     }
+  }
+
+  componentDidMount(){
+    this.setState({weather:'Clear'});
   }
 
   handleUpdateLocation = async city => {
@@ -40,6 +52,7 @@ export default class App extends Component<Props> {
           weather,
           temperature,
         });
+        console.log(this.state);
       } catch (e) {
         this.setState({
           loading: false,
@@ -61,9 +74,24 @@ export default class App extends Component<Props> {
         >
 
           <View style={styles.detailsContainer}>
-            <Text style={[styles.largeText, styles.textStyle]}>{location}</Text>
-            <Text style={[styles.smallText, styles.textStyle]}>{weather}</Text>
-            <Text style={[styles.largeText, styles.textStyle]}>{`${Math.round(temperature)}°`}</Text>
+            <ActivityIndicator animating={loading} color="white" size="large"/>
+            {!loading && (
+              <View>
+                {error && (
+                  <Text style={[styles.smallText, styles.textStyle]}>
+                    Could not load weather, please try a different city.
+                  </Text>
+                )}
+
+                {!error && (
+                  <View>
+                    <Text style={[styles.largeText, styles.textStyle]}>{location}</Text>
+                    <Text style={[styles.smallText, styles.textStyle]}>{weather}</Text>
+                    <Text style={[styles.largeText, styles.textStyle]}>{`${Math.round(temperature)}°`}</Text>
+                  </View>
+                )}
+              </View>
+            )}
 
             <SearchInput 
               placeholder="Search any city" 
@@ -77,6 +105,9 @@ export default class App extends Component<Props> {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   textStyle: {
     textAlign: 'center',
     fontFamily: Platform.OS === 'ios' ? 'AvenirNext-Regular' : 'Roboto',
@@ -85,16 +116,6 @@ const styles = StyleSheet.create({
 
   smallText: {
     fontSize: 18,
-  },
-  textInput: {
-    backgroundColor: '#666',
-    color: 'white',
-    height: 40,
-    width: 300,
-    marginTop: 20,
-    marginHorizontal: 20,
-    paddingHorizontal: 10,
-    alignSelf: 'center',
   },
   imageBackground: {
     flex: 1,
