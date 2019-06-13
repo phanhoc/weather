@@ -14,7 +14,8 @@ import {
   View, 
   ImageBackground, 
   KeyboardAvoidingView,
-  ActivityIndicator
+  ActivityIndicator,
+  StatusBar
 } from 'react-native';
 
 import SearchInput from'./components/SearchInput'
@@ -67,6 +68,8 @@ export default class App extends React.Component {
 
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
+        <StatusBar barStyle="light-content"/>
+
         <ImageBackground
           source={getImageForWeather(weather)}
           style={styles.imageBackground}
